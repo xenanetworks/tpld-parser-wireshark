@@ -1,6 +1,9 @@
 # Xena TPLD Dissector Plugin for Wireshark 
 
-Xena offers a Wireshark integration via a dedicated LUA plugin. It allows users to 
+Xena offers a Wireshark integration via a dedicated LUA plugin. It allows users to easily read the information in the Xena test signature field.
+
+> **IMPORTANT**
+> The Xena TPLD dissector plugin doesn't support micro TPLD (6 bytes long).
 
 ![XTPLD Lua](images/xtpld.png)
 
