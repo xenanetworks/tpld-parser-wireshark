@@ -10,4 +10,3 @@ Xena offers a Wireshark integration via a dedicated LUA plugin. It allows users 
 3. Restart Wireshark
 
 ![Personal Lua Plugins](images/install.png)
-
