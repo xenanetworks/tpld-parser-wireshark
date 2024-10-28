@@ -222,11 +222,11 @@ local debug_level = {
 
 local DEBUG = debug_level.LEVEL_1
 
---local dprint = function() end
+local dprint = function() end
 
-local dprint = function(...)
-    print(table.concat({"Lua:", ...}," "))
-end
+--local dprint = function(...)
+--    print(table.concat({"Lua:", ...}," "))
+--end
 
 dprint("Wireshark version = ", get_version())
 dprint("Lua version = ", _VERSION)
@@ -238,9 +238,6 @@ local function parse_lua_version(version)
 end
 
 local lua_major, lua_minor = parse_lua_version(_VERSION)
-
--- Print Lua version
-print("Lua version = ", lua_major, lua_minor)
 
 -- Custom bitwise operations for unsigned integers. 
 -- Needed because the bit32 library is not available in Lua 5.4,
