@@ -2,9 +2,6 @@
 
 Xena offers a Wireshark integration via a dedicated LUA plugin. It allows users to easily read the information in the Xena test signature field. The plugin supports **Wireshark 3.x and above**.
 
-> **IMPORTANT**
-> The Xena TPLD dissector plugin doesn't support micro TPLD (6 bytes long).
-
 ![XTPLD Lua](images/xtpld.png)
 
 
@@ -18,6 +15,7 @@ It is unusual for Wireshark to have things stored at the end, and not the beginn
 2. Go to `Wireshark Main Window > Help > About Wireshark > Folders > Personal Lua Plugins`, click the blue Location to open plugin folder.
 3. Delete the ``xenatpld-wplugin.lua``, if present.
 4. Place ``xena_tpld.lua`` into the folder.
+4. Place ``xena_utpld.lua`` into the folder.
 5. Restart Wireshark.
 
 ![Personal Lua Plugins](images/install.png)
@@ -26,3 +24,4 @@ It is unusual for Wireshark to have things stored at the end, and not the beginn
 ## Uninstall Xena Wireshark Plugin 2.0
 1. Go to `Wireshark Main Window > Help > About Wireshark > Folders > Personal Lua Plugins`, click the blue Location to open plugin folder.
 2. Delete the ``xena_tpld.lua``.
+2. Delete the ``xena_utpld.lua``.
