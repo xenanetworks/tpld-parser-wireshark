@@ -458,6 +458,14 @@ function xtpld_proto.dissector(tvbuf, pktinfo, root)
     end
 
     local payloadlength = pktlen - (MIN_TPLD_LEN + ETHER_FCS_LEN)
+
+    -- bail out if the captured data doesn't fully cover the TPLD
+    local caplen = tvbuf:len()
+    if caplen < payloadlength + MIN_TPLD_LEN then
+        dprint("captured length", caplen, "too short for TPLD")
+        return
+    end
+
     local tpldbuf = tvbuf:range(payloadlength, MIN_TPLD_LEN)
     
     -- process the TPLD flags first
