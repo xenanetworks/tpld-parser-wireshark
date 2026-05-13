@@ -203,7 +203,7 @@
 -- limitations under the License.
 
 -- Dissector version
-local xtpld_version = "1.1"
+local xtpld_version = "1.2"
 
 --
 -- Wireshark version check - require version 2.0 or higher
@@ -310,6 +310,9 @@ local bit32 = xbit32
 local MIN_TPLD_LEN      = 20
 local ETHER_FCS_LEN     = 4
 
+-- Field extractor to detect if Ethernet dissector found an FCS
+local eth_fcs_field = Field.new("eth.fcs")
+
 -- Define the Xena TPLD protocol
 xtpld_proto = Proto("xtpld", "Xena Test Payload")
 
@@ -349,6 +352,7 @@ local default_settings =
 {
     setprotinheader = false,
     decodebadcrc = false,
+    tpld_offset = 0,
 }
 
 xtpld_proto.prefs.setprotinheader = Pref.bool("Show Protocol in Header", 
@@ -358,6 +362,10 @@ xtpld_proto.prefs.setprotinheader = Pref.bool("Show Protocol in Header",
 xtpld_proto.prefs.decodebadcrc  = Pref.bool("Decode Packets with Bad CRC", 
     default_settings.decodebadcrc,
     "Decode packets with invalid checksums")
+
+xtpld_proto.prefs.tpld_offset = Pref.uint("Bytes between TPLD and FCS",
+    default_settings.tpld_offset,
+    "Number of extra bytes between the TPLD and the Ethernet FCS (use Wireshark's Ethernet preferences to control FCS handling)")
 
                
 -- Register this dissector as a post-dissector so it receives all packets 
@@ -444,20 +452,29 @@ end
 function xtpld_proto.prefs_changed()
     default_settings.setprotinheader = xtpld_proto.prefs.setprotinheader
     default_settings.decodebadcrc  = xtpld_proto.prefs.decodebadcrc
+    default_settings.tpld_offset = xtpld_proto.prefs.tpld_offset
 end
 
 -- Dissector main routine - called by Wireshark
 function xtpld_proto.dissector(tvbuf, pktinfo, root)
+    -- Determine FCS length based on Wireshark's Ethernet dissector
+    local fcs_len = 0
+    if eth_fcs_field() then
+        fcs_len = ETHER_FCS_LEN
+    end
+
+    local tail_bytes = fcs_len + default_settings.tpld_offset
+
     -- get the reported remaining length of the buffer
     local pktlen = tvbuf:reported_length_remaining()
     
-    if pktlen < (MIN_TPLD_LEN + ETHER_FCS_LEN) then
+    if pktlen < (MIN_TPLD_LEN + tail_bytes) then
         -- buffer is too small to contain a Xena TPLD - bail out!
         dprint("packet length", pktlen, "too short")
         return
     end
 
-    local payloadlength = pktlen - (MIN_TPLD_LEN + ETHER_FCS_LEN)
+    local payloadlength = pktlen - (MIN_TPLD_LEN + tail_bytes)
 
     -- bail out if the captured data doesn't fully cover the TPLD
     local caplen = tvbuf:len()
